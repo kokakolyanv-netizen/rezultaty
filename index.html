@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<title>Результаты</title>
+<!-- Полноэкранное приложение (GitHub Pages). В Apps Script эти теги игнорируются — там их ставит doGet. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Результаты">
+<meta name="application-name" content="Результаты">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#eef0f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e0f13" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#eef0f4; --surface:#ffffff; --surface-2:#f6f7fa; --ink:#14161c; --ink-2:#4a4f5c; --muted:#8b909c;
+  --line:#e3e6ec; --accent:#5b4ff0; --accent-ink:#ffffff; --accent-soft:#ecebfe;
+  --ok:#12a37a; --ok-soft:#e2f6ef; --warn:#e2573b; --warn-soft:#fdebe6; --amber:#d99212;
+  --hero-1:#1b1d2a; --hero-2:#34306b; --shadow:0 1px 2px rgba(20,22,28,.04),0 8px 24px rgba(20,22,28,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e0f13; --surface:#17191f; --surface-2:#1e2129; --ink:#f1f2f5; --ink-2:#c3c7d1; --muted:#8a8f9b;
+    --line:#272a33; --accent:#8b82ff; --accent-ink:#0e0f13; --accent-soft:#25234a;
+    --ok:#3fcf9f; --ok-soft:#14302a; --warn:#ff7a5c; --warn-soft:#3a1f19;
+    --hero-1:#1d1f2c; --hero-2:#2f2a66; --shadow:none;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 "Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:600px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 120px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 18px}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#9a6cff);
+  display:grid;place-items:center;color:#fff}
+.brand b{font-size:19px;letter-spacing:-.3px;display:block;line-height:1.1}
+.brand small{font-size:12px;color:var(--muted)}
+.who{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px 7px 8px;
+  font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.ava{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  display:grid;place-items:center;font-size:12px;font-weight:700}
+
+/* cards */
+.card{background:var(--surface);border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card h2{font-size:17px;margin:0 0 4px;letter-spacing:-.2px}
+.card .sub{font-size:13px;color:var(--muted);margin:0 0 6px}
+.sec{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:22px 4px 10px}
+
+/* form */
+label{display:block;font-size:13px;color:var(--ink-2);margin:14px 0 6px;font-weight:500}
+input,textarea,select{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1.5px solid var(--line);
+  border-radius:14px;background:var(--surface-2);color:var(--ink);outline:none;-webkit-appearance:none;appearance:none;transition:.15s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);background:var(--surface)}
+input::placeholder{color:var(--muted)}
+textarea{min-height:64px;resize:vertical}
+.amount{font-size:30px!important;font-weight:700;letter-spacing:-.5px;padding:14px 16px!important}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 15px;font-size:15px;cursor:pointer;transition:.15s}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-left:7px;vertical-align:middle}
+.grp{font-size:12px;color:var(--muted);margin:12px 0 7px}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.calc div{background:var(--surface-2);border-radius:14px;padding:11px 13px}
+.calc b{display:block;font-size:19px;letter-spacing:-.3px}
+.calc span{font-size:12px;color:var(--muted)}
+.btn{width:100%;border:0;border-radius:16px;padding:16px;font-size:17px;font-weight:600;background:var(--accent);
+  color:var(--accent-ink);margin-top:18px;cursor:pointer;transition:transform .1s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.45}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.small{width:auto;padding:9px 14px;font-size:14px;margin:0;border-radius:12px}
+.btn.danger{background:var(--warn-soft);color:var(--warn)}
+.link{background:none;border:0;color:var(--accent);font-size:14px;font-weight:500;padding:12px 0 0;cursor:pointer}
+.hidden{display:none!important}
+.editbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--accent-soft);
+  color:var(--accent);border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:14px;font-weight:500}
+
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+nav .in{pointer-events:auto;display:flex;gap:4px;padding:6px;border-radius:22px;background:var(--surface);
+  box-shadow:0 10px 30px rgba(20,22,28,.14);border:1px solid var(--line);max-width:600px;width:100%}
+nav button{flex:1;border:0;background:none;font-size:12px;color:var(--muted);padding:7px 4px;border-radius:16px;cursor:pointer;font-weight:500}
+nav svg{display:block;margin:0 auto 2px;width:22px;height:22px}
+nav button.on{background:var(--accent-soft);color:var(--accent)}
+
+/* toast & modal */
+.toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-150%);transition:.35s cubic-bezier(.2,.9,.3,1.2);
+  background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-size:15px;font-weight:500;z-index:30;max-width:92%;box-shadow:var(--shadow)}
+.toast.show{transform:translate(-50%,0)}
+.toast.err{background:var(--warn);color:#fff}
+.modal{position:fixed;inset:0;background:rgba(10,11,15,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20;animation:fade .2s}
+.sheet{background:var(--surface);width:100%;max-width:600px;border-radius:26px 26px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));
+  max-height:90vh;overflow:auto;animation:up .25s cubic-bezier(.2,.9,.3,1)}
+.sheet h3{margin:0 0 4px;font-size:19px}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+@keyframes fade{from{opacity:0}}
+
+/* summary */
+.hero{background:linear-gradient(140deg,var(--hero-1),var(--hero-2));color:#fff;border-radius:24px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(154,108,255,.55),transparent 70%)}
+.hero .lbl{font-size:13px;opacity:.7}
+.hero .big{font-size:36px;font-weight:700;letter-spacing:-1px;margin:2px 0 6px}
+.hero .row{display:flex;gap:18px;flex-wrap:wrap;position:relative;z-index:1}
+.hero .row div{font-size:13px;opacity:.85}
+.hero .row b{display:block;font-size:17px;opacity:1}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:8px;background:rgba(255,255,255,.14)}
+.up{color:var(--ok)} .down{color:var(--warn)}
+.hero .up{color:#7ef0c4} .hero .down{color:#ffb4a3}
+.months{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -16px 6px;padding-left:16px;scrollbar-width:none}
+.months::-webkit-scrollbar{display:none}
+.months .chip{white-space:nowrap;flex:none}
+.line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .t{font-weight:500}
+.line small{display:block;color:var(--muted);font-size:13px;font-weight:400}
+.line .v{font-weight:600;white-space:nowrap;text-align:right}
+.bar{height:6px;background:var(--surface-2);border-radius:4px;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--surface);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.tile span{font-size:12px;color:var(--muted)}
+.tile b{display:block;font-size:20px;letter-spacing:-.4px;margin-top:2px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:13px;font-weight:500;padding:6px 11px;border-radius:999px;background:var(--surface-2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.no{background:var(--warn-soft);color:var(--warn)}
+.muted{color:var(--muted);font-size:13px}
+.loading{color:var(--muted);text-align:center;padding:40px 0}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+/* menu */
+.menu .line{cursor:pointer}
+.ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:18px}
+.menu .t{flex:1}
+.chev{color:var(--muted)}
+.back{display:flex;align-items:center;gap:6px;background:none;border:0;color:var(--accent);font-weight:500;padding:0;margin:0 0 12px;cursor:pointer;font-size:15px}
+.paid{opacity:.5}
+.over{color:var(--due);font-weight:600}
+.acts{display:flex;gap:6px;flex:none}
+.iconbtn{border:0;background:var(--surface-2);border-radius:10px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;font-size:15px}
+.iconbtn.ok{background:var(--ok-soft);color:var(--ok)}
+/* кредиты */
+:root{--due:#c2631c;--due-soft:#fff3e8}
+@media (prefers-color-scheme: dark){ :root{--due:#f2a35e;--due-soft:#33251a} }
+.alert{display:flex;gap:12px;align-items:center;border-radius:18px;padding:13px 14px;margin:0 0 12px;cursor:pointer;font-size:13px;line-height:1.35}
+.alert.bad{background:var(--due-soft);color:var(--due)}
+.alert.soon{background:#fff4dc;color:#9a6200}
+.alert b{display:block;font-size:15px;margin-bottom:1px}
+.alert .go{margin-left:auto;font-size:22px;opacity:.6}
+.alert .em{font-size:22px;flex:none}
+@media (prefers-color-scheme: dark){ .alert.soon{background:#3a2c10;color:#f2b84b} }
+nav button{position:relative}
+.badge{position:absolute;top:4px;left:calc(50% + 6px);width:10px;height:10px;border-radius:50%;background:var(--due);border:2px solid var(--surface)}
+.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-2);margin:12px 0 8px}
+.stack i{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;background:var(--c)}
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;border-radius:10px;padding:9px 6px;font-size:14px;cursor:pointer;color:var(--ink-2)}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.res{margin-top:16px;background:var(--surface-2);border-radius:16px;padding:14px 16px}
+.res .tot{font-size:30px;font-weight:700;letter-spacing:-.6px;margin-bottom:6px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:4px 0;color:var(--ink-2)}
+.kv b{color:var(--ink);white-space:nowrap}
+label.chk{display:flex;gap:10px;align-items:center;margin:16px 0 0;font-size:14px;font-weight:400;color:var(--ink-2)}
+label.chk input{width:22px;height:22px;flex:none;-webkit-appearance:checkbox;appearance:auto;margin:0;padding:0}
+.grid2>div{min-width:0}
+input[type=date]{min-width:0;max-width:100%}
+.hero.red{background:linear-gradient(140deg,#2c2547 0%,#5d4378 55%,#b07257 100%)}
+.hero.red::after{background:radial-gradient(circle,rgba(255,196,150,.38),transparent 70%)}
+
+/* как у приложения: без зума по двойному тапу, без «резинки», без выделения кнопок */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+html,body{overscroll-behavior-y:none}
+button,nav,header,.chip,.line,.alert{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* подложка под часы и батарею: контент не просвечивает под статус-баром */
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:var(--bg);z-index:19}
+
+/* вход: код доступа и имя */
+.gate{position:fixed;inset:0;z-index:40;background:var(--bg);overflow:auto;
+  padding:max(28px,calc(env(safe-area-inset-top) + 20px)) 20px calc(28px + env(safe-area-inset-bottom))}
+.gate .in{max-width:420px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center}
+.gate .logo{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,var(--accent),#9a6cff);
+  display:grid;place-items:center;color:#fff;margin:0 auto 14px;box-shadow:0 10px 30px rgba(91,79,240,.35)}
+.gate h1{text-align:center;font-size:26px;letter-spacing:-.5px;margin:0}
+.gate .lead{text-align:center;color:var(--muted);font-size:15px;margin:4px 0 22px}
+.gate .code{text-align:center;font-size:28px!important;font-weight:700;letter-spacing:8px}
+.gate .err{color:var(--warn);font-size:14px;min-height:20px;margin:10px 2px 0;text-align:center}
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:8px 0;font-size:15px}
+.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent);font-size:13px;font-weight:700;display:grid;place-items:center}
+.steps svg{vertical-align:-3px}
+.note{background:var(--accent-soft);color:var(--ink);border-radius:18px;padding:14px 16px;margin-bottom:14px;font-size:14px}
+.note b{display:block;font-size:15px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></div>
+      <div><b>Результаты</b><small id="hdrDate"></small></div>
+    </div>
+    <button class="who" id="whoBtn" onclick="askName()"><span class="ava" id="ava">?</span><span id="whoName">Кто вы?</span></button>
+  </header>
+  <div id="newApp"></div>
+  <div id="loanAlert"></div>
+
+  <!-- ВЫРУЧКА -->
+  <section id="tab-rev">
+    <div class="card">
+      <div id="r-editbar" class="editbar hidden"><span>Исправление записи</span><button class="btn small ghost" onclick="cancelEdit('rev')">Отмена</button></div>
+      <h2>Выручка за день</h2>
+      <p class="sub">Одна точка — одна запись. Зелёная точка — уже внесено сегодня.</p>
+      <label>Точка</label>
+      <div class="chips" id="r-points"></div>
+      <label>Дата</label>
+      <input type="date" id="r-date">
+      <label>Выручка ОФД, ₽</label>
+      <input id="r-ofd" class="amount" inputmode="decimal" placeholder="0">
+      <div class="grid2">
+        <div><label>Наличные ОФД</label><input id="r-cash" inputmode="decimal" placeholder="0"></div>
+        <div><label>Чеков</label><input id="r-checks" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <label>Выручка QuickResto, ₽</label>
+      <input id="r-qr" inputmode="decimal" placeholder="0">
+      <button class="link" id="r-morebtn" onclick="showMore('r')">+ Бонусы и комментарий</button>
+      <div id="r-more" class="hidden">
+        <label>Оплачено бонусами, ₽</label><input id="r-bonus" inputmode="decimal" placeholder="0">
+        <label>Комментарий</label><textarea id="r-comment"></textarea>
+      </div>
+      <div class="calc">
+        <div><b id="c-card">—</b><span>безнал</span></div>
+        <div><b id="c-avg">—</b><span>средний чек</span></div>
+      </div>
+      <button class="btn" id="r-save" onclick="saveRev()">Сохранить</button>
+    </div>
+  </section>
+
+  <!-- РАСХОД -->
+  <section id="tab-exp" class="hidden">
+    <div class="card">
+      <div id="e-editbar" class="editbar hidden"><span>Исправление записи</span><button class="btn small ghost" onclick="cancelEdit('exp')">Отмена</button></div>
+      <h2>Расход</h2>
+      <p class="sub">Каждая оплата — отдельной записью.</p>
+      <label>Сумма, ₽</label>
+      <input id="e-amount" class="amount" inputmode="decimal" placeholder="0">
+      <label>Категория</label>
+      <div id="e-cats"></div>
+      <label>Кому / что</label>
+      <input id="e-who" placeholder="Например: Купер" list="e-who-list" autocomplete="off">
+      <datalist id="e-who-list"></datalist>
+      <label>Точка</label>
+      <div class="chips" id="e-points"></div>
+      <label>Дата</label>
+      <input type="date" id="e-date">
+      <label>Комментарий</label>
+      <input id="e-comment" placeholder="необязательно">
+      <button class="btn" id="e-save" onclick="saveExp()">Сохранить расход</button>
+    </div>
+  </section>
+
+  <!-- ИТОГИ -->
+  <section id="tab-sum" class="hidden"><div id="sum"><div class="loading">Загружаю…</div></div></section>
+
+  <!-- ЕЩЁ -->
+  <section id="tab-more" class="hidden">
+    <div id="more-menu">
+      <div class="card menu">
+        <div class="line" onclick="openPanel('loans')"><div class="ic" style="background:#fdebe6;color:#e2573b">₽</div><div class="t">Кредиты<small id="loanSub">Просрочки, пени, калькулятор</small></div><span class="chev">›</span></div>
+        <div class="line" onclick="openPanel('pay')"><div class="ic" style="background:#fff1db;color:#b97609">📅</div><div class="t">Платежи<small>Календарь, оплаты, регулярные</small></div><span class="chev">›</span></div>
+        <div class="line" onclick="openPanel('sales')"><div class="ic" style="background:#e6f0ff;color:#2f6fdc">🧾</div><div class="t">Продажи по категориям<small>Раз в месяц из QuickResto</small></div><span class="chev">›</span></div>
+        <div class="line" onclick="openPanel('gis')"><div class="ic" style="background:#e4f7ee;color:#12a37a">📍</div><div class="t">2ГИС<small>Раз в месяц: клиенты и маршруты</small></div><span class="chev">›</span></div>
+        <div class="line" onclick="openPanel('log')"><div class="ic" style="background:var(--accent-soft);color:var(--accent)">✎</div><div class="t">Журнал и исправления<small>Кто что внёс, исправить или удалить</small></div><span class="chev">›</span></div>
+        <div class="line" onclick="openPanel('refs')"><div class="ic" style="background:#f3e8ff;color:#8a3fd1">＋</div><div class="t">Точки и категории<small>Добавить новую точку или статью</small></div><span class="chev">›</span></div>
+      </div>
+    </div>
+    <div id="panel" class="hidden"></div>
+  </section>
+</div>
+
+<nav><div class="in">
+  <button id="nav-rev" class="on" onclick="go('rev')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2 2.7 5 3.5 5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"/></svg>Выручка</button>
+  <button id="nav-exp" onclick="go('exp')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h3"/></svg>Расход</button>
+  <button id="nav-sum" onclick="go('sum')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>Итоги</button>
+  <button id="nav-more" onclick="go('more')"><span class="badge hidden" id="moreBadge"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>Ещё</button>
+</div></nav>
+
+<div class="toast" id="toast"></div>
+<div class="gate hidden" id="gate"></div>
+
+<script>
+/* ===== состояние и утилиты ===== */
+const S = { refs:null, rPoint:null, ePoint:'Общие', eCat:null, filledToday:[], edit:{rev:null,exp:null},
+  report:null, month:null, pay:null, monthly:{}, mKey:{} };
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rub = n => (n===null||n===undefined||n===''||isNaN(n)) ? '—' : Math.round(n).toLocaleString('ru-RU')+' ₽';
+const pct = n => (n===null||n===undefined||n===''||isNaN(n)) ? '—' : (n*100).toFixed(1).replace('.',',')+'%';
+const sgn = n => (n===null||n===''||isNaN(n)) ? '' : '<span class="'+(n>=0?'up':'down')+'">'+(n>=0?'+':'')+(n*100).toFixed(1).replace('.',',')+'%</span>';
+const val = id => { const v=$(id).value.replace(/\s/g,'').replace(',','.'); return v===''?'':Number(v); };
+const todayISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const ru = iso => iso ? iso.split('-').reverse().join('.') : '—';
+const ls = { get(k){ try{return localStorage.getItem(k)||'';}catch(e){return '';} }, set(k,v){ try{localStorage.setItem(k,v);}catch(e){} } };
+const name = () => ls.get('name');
+
+/* ===== связь с сервером =====
+   Приложение на GitHub Pages ходит в Apps Script через fetch (doPost), старая ссылка /exec — через google.script.run.api.
+   В каждом запросе — код доступа. Если сервер его не принял, показываем экран входа. */
+const API_URL = 'https://script.google.com/macros/s/AKfycbxGLqjrWgh5DNuFT1Clmj4RRWs3TpXswh-kGW7q_rZKbQt2mp1-gMYFZGEnNV03GDOL/exec';
+const APP_URL = 'https://kokakolyanv-netizen.github.io/rezultaty/';
+const GAS = !!(window.google && google.script && google.script.run);
+const STANDALONE = navigator.standalone===true || !!(window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+const isAuthErr = e => !!(e && (e.auth || String(e.message||'').indexOf('Неверный код доступа')>=0));
+
+function call(fn, args){
+  const req={ fn, args:args||[], code:ls.get('code') };
+  if(GAS) return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no).api(req));
+  return fetch(API_URL,{ method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(req) })
+    .catch(()=>{ throw new Error('Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.'); })
+    .then(r=>{ if(!r.ok) throw new Error('Сервер не ответил ('+r.status+'). Попробуйте ещё раз.'); return r.text(); })
+    .then(t=>{ let j; try{ j=JSON.parse(t); }catch(e){ throw new Error('Сервер ответил ошибкой. Попробуйте чуть позже.'); }
+      if(!j.ok){ const e=new Error(j.error||'Ошибка'); e.auth=!!j.auth; throw e; } return j.data; });
+}
+function run(fn, ...args){
+  return call(fn, args).catch(e=>{ if(isAuthErr(e)){ ls.set('code',''); showGate('Код доступа сменился — введите новый.'); } throw e; });
+}
+function toast(msg, err){ const t=$('toast'); t.textContent=msg; t.className='toast show'+(err?' err':''); clearTimeout(t._h); t._h=setTimeout(()=>t.className='toast',2800); }
+function fail(e){ if(isAuthErr(e)) return; toast((e&&e.message)||'Ошибка', true); }
+function busy(btn, on){ if(btn){ btn.disabled=on; } }
+function needName(){ if(name()) return true; askName(); return false; }
+
+function askName(){
+  const m=modal('<h3>Как вас зовут?</h3><p class="muted">Имя будет видно в журнале у каждой записи.</p>'+
+    '<input id="n-name" autocomplete="given-name" placeholder="Имя" value="'+esc(name())+'">'+
+    '<button class="btn" id="n-ok">Сохранить</button><button class="btn ghost" id="n-x">Отмена</button>');
+  const inp=$('n-name');
+  const ok=()=>{ const n=inp.value.trim(); if(!n) return toast('Введите имя',true); ls.set('name',n); paintName(); m.remove(); };
+  $('n-ok').onclick=ok; $('n-x').onclick=()=>m.remove();
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') ok(); });
+  setTimeout(()=>inp.focus(),60);
+}
+function paintName(){ const n=name(); $('whoName').textContent=n||'Кто вы?'; $('ava').textContent=n?n[0].toUpperCase():'?'; }
+
+function modal(html){
+  const m=document.createElement('div'); m.className='modal';
+  m.innerHTML='<div class="sheet">'+html+'</div>';
+  m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
+  document.body.appendChild(m); return m;
+}
+function confirmBox(title, text, yes, onYes, danger){
+  const m=modal('<h3>'+esc(title)+'</h3><p class="muted">'+esc(text)+'</p><button class="btn'+(danger?' danger':'')+'" data-y>'+esc(yes)+'</button><button class="btn ghost" data-n>Отмена</button>');
+  m.querySelector('[data-n]').onclick=()=>m.remove();
+  m.querySelector('[data-y]').onclick=()=>{ m.remove(); onYes(); };
+}
+
+/* ===== навигация ===== */
+function go(tab){
+  ['rev','exp','sum','more'].forEach(t=>{ $('tab-'+t).classList.toggle('hidden',t!==tab); $('nav-'+t).classList.toggle('on',t===tab); });
+  if(tab==='sum'){ loadSummary(); loadLoanAlert(); }
+  if(tab==='more') closePanel();
+  if(tab==='rev') refreshToday();
+  window.scrollTo(0,0);
+}
+
+/* ===== чипы ===== */
+function chips(el, items, sel, pick, done){
+  el.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button'); b.type='button'; b.className='chip'+(it===sel?' on':'');
+    b.innerHTML=esc(it)+((done||[]).includes(it)?'<span class="dot"></span>':'');
+    b.onclick=()=>pick(it); el.appendChild(b);
+  });
+}
+const salesPoints = () => S.refs.points.filter(p=>p!=='Общие');
+function renderRevPoints(){ chips($('r-points'), salesPoints(), S.rPoint, p=>{S.rPoint=p;renderRevPoints();}, $('r-date').value===todayISO()?S.filledToday:[]); }
+function renderExpPoints(){ chips($('e-points'), S.refs.points, S.ePoint, p=>{S.ePoint=p;renderExpPoints();}); }
+function renderCats(){
+  const g={}; S.refs.categories.forEach(c=>(g[c.type]=g[c.type]||[]).push(c.name));
+  const box=$('e-cats'); box.innerHTML='';
+  Object.keys(g).forEach(t=>{
+    const h=document.createElement('div'); h.className='grp'; h.textContent=t; box.appendChild(h);
+    const c=document.createElement('div'); c.className='chips'; box.appendChild(c);
+    chips(c, g[t], S.eCat, n=>{S.eCat=n;renderCats();});
+  });
+}
+function showMore(p){ $(p+'-more').classList.remove('hidden'); $(p+'-morebtn').classList.add('hidden'); }
+
+/* ===== выручка ===== */
+function recalc(){
+  const ofd=val('r-ofd'), cash=val('r-cash')||0, qr=val('r-qr'), ch=val('r-checks');
+  $('c-card').textContent = ofd==='' ? '—' : rub(ofd-cash);
+  const base = qr!=='' ? qr : ofd;
+  $('c-avg').textContent = (ch && base!=='') ? rub(base/ch) : '—';
+}
+document.addEventListener('input', e=>{ if(['r-ofd','r-cash','r-qr','r-checks'].includes(e.target.id)) recalc(); });
+
+function resetRev(){
+  ['r-ofd','r-cash','r-qr','r-checks','r-bonus','r-comment'].forEach(id=>$(id).value='');
+  S.edit.rev=null; $('r-editbar').classList.add('hidden'); $('r-save').textContent='Сохранить'; recalc();
+}
+function saveRev(force){
+  if(!needName()) return;
+  if(!S.rPoint) return toast('Выберите точку', true);
+  const ofd=val('r-ofd'), cash=val('r-cash');
+  if(ofd==='') return toast('Введите выручку ОФД', true);
+  if(cash!=='' && cash>ofd) return toast('Наличных больше, чем вся выручка — проверьте', true);
+  const d={ name:name(), date:$('r-date').value, point:S.rPoint, ofd, cash, qr:val('r-qr'), checks:val('r-checks'),
+    bonus:val('r-bonus'), comment:$('r-comment').value.trim(), force:!!force, editRow:S.edit.rev };
+  busy($('r-save'),true);
+  run('saveRevenue', d).then(res=>{
+    busy($('r-save'),false);
+    if(res.duplicate) return confirmBox('Эта точка за этот день уже внесена','Скорее всего, данные уже есть. Добавить ещё одну запись?','Да, добавить',()=>saveRev(true));
+    toast((d.editRow?'Исправлено: ':'Сохранено: ')+d.point+' · '+rub(ofd));
+    const wasEdit=!!d.editRow; resetRev();
+    if(d.date===todayISO() && !S.filledToday.includes(d.point)) S.filledToday.push(d.point);
+    if(!wasEdit){ const rest=salesPoints().filter(p=>!S.filledToday.includes(p)); if(d.date===todayISO() && rest.length) S.rPoint=rest[0]; }
+    renderRevPoints();
+  }).catch(e=>{ busy($('r-save'),false); fail(e); });
+}
+
+/* ===== расход ===== */
+function resetExp(){
+  ['e-amount','e-who','e-comment'].forEach(id=>$(id).value='');
+  S.eCat=null; S.ePoint='Общие'; S.edit.exp=null; $('e-date').value=todayISO();
+  $('e-editbar').classList.add('hidden'); $('e-save').textContent='Сохранить расход';
+  renderCats(); renderExpPoints();
+}
+function saveExp(){
+  if(!needName()) return;
+  const amount=val('e-amount');
+  if(!amount) return toast('Введите сумму', true);
+  if(!S.eCat) return toast('Выберите категорию', true);
+  const d={ name:name(), date:$('e-date').value, category:S.eCat, who:$('e-who').value.trim(), amount,
+    point:S.ePoint, comment:$('e-comment').value.trim(), editRow:S.edit.exp };
+  busy($('e-save'),true);
+  run('saveExpense', d).then(()=>{
+    busy($('e-save'),false);
+    toast((d.editRow?'Исправлено: ':'Расход сохранён: ')+rub(amount));
+    rememberWho(d.who); resetExp();
+  }).catch(e=>{ busy($('e-save'),false); fail(e); });
+}
+function rememberWho(w){
+  if(!w) return; let l=[]; try{ l=JSON.parse(ls.get('who')||'[]'); }catch(e){}
+  l=[w].concat(l.filter(x=>x!==w)).slice(0,40); ls.set('who',JSON.stringify(l)); fillWho();
+}
+function fillWho(){ let l=[]; try{ l=JSON.parse(ls.get('who')||'[]'); }catch(e){} $('e-who-list').innerHTML=l.map(w=>'<option value="'+esc(w)+'">').join(''); }
+
+/* ===== исправление ===== */
+function cancelEdit(k){ k==='rev'?resetRev():resetExp(); }
+function startEdit(sheet,row){
+  run('getEntry',sheet,row).then(e=>{
+    if(!e) return toast('Эта запись уже удалена', true);
+    if(e.kind==='rev'){
+      go('rev'); S.edit.rev=e.row; S.rPoint=e.point; $('r-date').value=e.date;
+      $('r-ofd').value=e.ofd; $('r-cash').value=e.cash; $('r-qr').value=e.qr; $('r-checks').value=e.checks;
+      $('r-bonus').value=e.bonus; $('r-comment').value=e.comment; showMore('r');
+      $('r-editbar').classList.remove('hidden'); $('r-save').textContent='Сохранить исправление';
+      renderRevPoints(); recalc();
+    } else {
+      go('exp'); S.edit.exp=e.row; S.eCat=e.category; S.ePoint=e.point; $('e-date').value=e.date;
+      $('e-amount').value=e.amount; $('e-who').value=e.who; $('e-comment').value=e.comment;
+      $('e-editbar').classList.remove('hidden'); $('e-save').textContent='Сохранить исправление';
+      renderCats(); renderExpPoints();
+    }
+  }).catch(fail);
+}
+function removeEntry(sheet,row){
+  if(!needName()) return;
+  confirmBox('Удалить запись?','Строка в таблице очистится. Это действие попадёт в журнал.','Удалить',()=>{
+    run('deleteEntry',{sheet,row,name:name()}).then(()=>{ toast('Запись удалена'); openPanel('log'); }).catch(fail);
+  }, true);
+}
+
+/* ===== итоги ===== */
+function refreshToday(){
+  run('getToday').then(t=>{
+    S.filledToday=t.filledToday;
+    if(!S.edit.rev){ const rest=salesPoints().filter(p=>!t.filledToday.includes(p)); if(rest.length && $('r-date').value===todayISO() && !$('r-ofd').value) S.rPoint=rest[0]; }
+    renderRevPoints();
+  }).catch(()=>{});
+}
+function loadSummary(){
+  $('sum').innerHTML='<div class="loading">Загружаю…</div>';
+  Promise.all([run('getReport'), run('getToday')]).then(([r,t])=>{
+    S.report=r; S.today=t; S.filledToday=t.filledToday;
+    if(!S.month || !r.months.find(m=>m.key===S.month)) S.month = r.months.length ? r.months[r.months.length-1].key : null;
+    renderSummary();
+  }).catch(e=>$('sum').innerHTML='<div class="card">Не получилось загрузить: '+esc(e.message)+'</div>');
+}
+function renderSummary(){
+  const r=S.report, t=S.today, m=r.months.find(x=>x.key===S.month);
+  let h='';
+  h+='<div class="card"><h2>Сегодня, '+ru(t.today)+'</h2><div class="pills">'+
+     salesPoints().map(p=>{const ok=t.filledToday.includes(p); return '<span class="pill '+(ok?'ok':'no')+'">'+esc(p)+(ok?' · внесено':' · нет данных')+'</span>';}).join('')+
+     '</div><p class="muted" style="margin:10px 0 0">Последняя дата в таблице: '+ru(t.lastDate)+'</p></div>';
+
+  h+='<div class="months">'+r.months.slice().reverse().map(x=>'<button class="chip'+(x.key===S.month?' on':'')+'" onclick="S.month=\''+x.key+'\';renderSummary()">'+esc(x.label)+'</button>').join('')+'</div>';
+
+  if(m){
+    const full = m.days && m.days<28 ? '<span class="tag">данные за '+m.days+' дн.</span> ' : '';
+    h+='<div class="hero"><div class="lbl">Выручка ОФД · '+esc(m.label)+'</div><div class="big">'+rub(m.revenue)+'</div>'+
+       '<div style="margin-bottom:14px;position:relative;z-index:1">'+full+(m.mom!=null&&m.mom!==''?sgn(m.mom)+' <span style="opacity:.7;font-size:13px">к прошлому месяцу</span>':'')+'</div>'+
+       '<div class="row"><div><b>'+rub(m.profit)+'</b>операционная прибыль</div><div><b>'+pct(m.margin)+'</b>рентабельность</div><div><b>'+(m.checks||0).toLocaleString('ru-RU')+'</b>чеков</div></div></div>';
+
+    h+='<div class="card"><h2>По точкам</h2>';
+    const max=Math.max(1,...m.points.map(p=>p.revenue));
+    m.points.forEach(p=>{
+      h+='<div class="line"><div style="flex:1"><div class="t">'+esc(p.point)+'<small>'+(p.checks?p.checks.toLocaleString('ru-RU')+' чеков · ':'')+(p.avg?'ср. чек '+rub(p.avg)+' · ':'')+(p.perDay?rub(p.perDay)+' в день':'')+'</small></div>'+
+         '<div class="bar"><i style="width:'+(p.revenue/max*100).toFixed(0)+'%"></i></div></div><div class="v">'+rub(p.revenue)+'</div></div>';
+    });
+    h+='</div>';
+
+    h+='<div class="tiles">'+
+       '<div class="tile"><span>Расходы (без кредитов)</span><b>'+rub(m.expenses)+'</b></div>'+
+       '<div class="tile"><span>Себестоимость</span><b>'+pct(m.cogsPct)+'</b></div>'+
+       '<div class="tile"><span>ФОТ от выручки</span><b>'+pct(m.payrollPct)+'</b></div>'+
+       '<div class="tile"><span>Остаток после кредитов</span><b class="'+(m.rest<0?'down':'')+'">'+rub(m.rest)+'</b></div>'+
+       '</div><div style="height:14px"></div>';
+
+    h+='<div class="card"><h2>Куда ушли деньги</h2>';
+    const cmax=Math.max(1,...m.cats.map(c=>c.sum));
+    m.cats.forEach(c=>{ h+='<div class="line"><div style="flex:1"><div class="t">'+esc(c.name)+'</div><div class="bar"><i style="width:'+(c.sum/cmax*100).toFixed(0)+'%;background:var(--ink-2)"></i></div></div><div class="v">'+rub(c.sum)+'</div></div>'; });
+    if(!m.cats.length) h+='<p class="empty">Расходов за месяц пока нет.</p>';
+    h+='</div>';
+  } else h+='<div class="card"><p class="empty">Данных пока нет.</p></div>';
+
+  h+='<div class="card"><h2>Последние действия</h2>'+logHtml(r.recent,false)+'</div>';
+  $('sum').innerHTML=h;
+}
+function logHtml(list, actions){
+  if(!list.length) return '<p class="empty">Пока пусто — записи появятся после первого сохранения.</p>';
+  return list.map(x=>{
+    const canEdit = actions && x.row && (x.type==='Выручка'||x.type==='Расход'||x.type.indexOf('Исправлен')===0);
+    return '<div class="line"><div style="flex:1;min-width:0"><div class="t">'+esc(x.what)+'<small>'+esc(x.who)+' · '+esc(x.type)+' · '+esc(x.when)+'</small></div></div>'+
+      (x.sum!=null?'<div class="v">'+rub(x.sum)+'</div>':'')+
+      (canEdit?'<div class="acts"><button class="iconbtn" title="Исправить" onclick="startEdit(\''+esc(x.sheet)+'\','+x.row+')">✎</button><button class="iconbtn" title="Удалить" onclick="removeEntry(\''+esc(x.sheet)+'\','+x.row+')">✕</button></div>':'')+'</div>';
+  }).join('');
+}
+
+/* ===== раздел «Ещё» ===== */
+function closePanel(){ $('panel').classList.add('hidden'); $('more-menu').classList.remove('hidden'); }
+function panel(html){ $('more-menu').classList.add('hidden'); const p=$('panel'); p.classList.remove('hidden');
+  p.innerHTML='<button class="back" onclick="closePanel()">‹ Назад</button>'+html; window.scrollTo(0,0); }
+
+function openPanel(k){
+  if(k==='loans') return loadLoans();
+  if(k==='pay') return loadPay();
+  if(k==='sales'||k==='gis') return loadMonthly(k);
+  if(k==='log'){ panel('<div class="loading">Загружаю…</div>');
+    return run('getLog').then(l=>panel('<div class="card"><h2>Журнал</h2><p class="sub">Выручку и расходы можно исправить ✎ или удалить ✕.</p>'+logHtml(l,true)+'</div>')).catch(fail); }
+  if(k==='refs') return refsPanel();
+}
+
+/* --- ежемесячные --- */
+const MCONF = {
+  sales:{ title:'Продажи по категориям', sub:'Итоги месяца из отчёта QuickResto по группам меню. Пустое поле — категория не выгружалась.',
+    cols:['Кофе (без групп)','Десерты','Какао / матча','Авторские напитки','Ice','Еда','Все прочие'], money:true },
+  gis:{ title:'2ГИС', sub:'Из личного кабинета 2ГИС за месяц. Затраты на рекламу берутся из расходов (категория «Маркетинг»).',
+    cols:['Новых клиентов','Построили маршрут: 60 лет','Построили маршрут: Ленина'], money:false, comment:true }
+};
+function loadMonthly(kind){
+  panel('<div class="loading">Загружаю…</div>');
+  run('getMonthly',kind).then(list=>{
+    S.monthly[kind]=list;
+    if(!S.mKey[kind]){
+      const now=todayISO().slice(0,7);
+      const past=list.filter(x=>x.key<now);
+      S.mKey[kind]=(past.length?past[past.length-1]:list[0]||{}).key;
+    }
+    renderMonthly(kind);
+  }).catch(fail);
+}
+function renderMonthly(kind){
+  const c=MCONF[kind], list=S.monthly[kind], m=list.find(x=>x.key===S.mKey[kind]);
+  const now=todayISO().slice(0,7);
+  let h='<div class="card"><h2>'+c.title+'</h2><p class="sub">'+c.sub+'</p>';
+  h+='<label>Месяц</label><div class="months" style="margin:0 -18px;padding-left:18px">'+
+     list.filter(x=>x.key<=now).reverse().map(x=>'<button class="chip'+(x.key===S.mKey[kind]?' on':'')+'" onclick="S.mKey.'+kind+'=\''+x.key+'\';renderMonthly(\''+kind+'\')">'+esc(x.label)+(x.filled?' ✓':'')+'</button>').join('')+'</div>';
+  if(m){
+    c.cols.forEach((col,i)=>{ h+='<label>'+esc(col)+(c.money?', ₽':'')+'</label><input id="m-'+i+'" inputmode="'+(c.money?'decimal':'numeric')+'" placeholder="—" value="'+esc(m.values[i])+'">'; });
+    if(c.comment) h+='<label>Комментарий</label><input id="m-c" value="'+esc(m.comment)+'" placeholder="например: данные за неполный месяц">';
+    if(c.money) h+='<div class="calc" style="grid-template-columns:1fr"><div><b id="m-total">—</b><span>итого за месяц</span></div></div>';
+    h+='<button class="btn" id="m-save" onclick="saveMonthly(\''+kind+'\')">'+(m.filled?'Обновить':'Сохранить')+' за '+esc(m.label)+'</button>';
+  }
+  h+='</div>';
+  panel(h);
+  if(c.money){ const upd=()=>{ let s=0; c.cols.forEach((_,i)=>s+=Number(($('m-'+i).value||'').replace(/\s/g,'').replace(',','.'))||0); $('m-total').textContent=rub(s); };
+    c.cols.forEach((_,i)=>$('m-'+i).addEventListener('input',upd)); upd(); }
+}
+function saveMonthly(kind){
+  if(!needName()) return;
+  const c=MCONF[kind];
+  const d={ kind, month:S.mKey[kind], name:name(), values:c.cols.map((_,i)=>$('m-'+i).value), comment:c.comment?$('m-c').value:'' };
+  busy($('m-save'),true);
+  run('saveMonthly',d).then(()=>{ toast('Сохранено'); loadMonthly(kind); }).catch(e=>{ busy($('m-save'),false); fail(e); });
+}
+
+/* --- платежи --- */
+function loadPay(){ panel('<div class="loading">Загружаю…</div>'); run('getPayments').then(p=>{S.pay=p;renderPay();}).catch(fail); }
+function renderPay(){
+  const p=S.pay; const tk=todayISO();
+  let h='<div class="hero"><div class="lbl">К оплате в ближайшие 14 дней</div><div class="big">'+rub(p.upcomingTotal)+'</div>'+
+        '<div class="row"><div><b>'+p.upcoming.length+'</b>платежей</div><div><b>'+rub(p.regularTotal)+'</b>регулярных в месяц</div></div></div>';
+  h+='<div class="card"><h2>Ближайшие</h2>';
+  if(!p.upcoming.length) h+='<p class="empty">Ничего не запланировано.</p>';
+  p.upcoming.forEach(u=>{
+    h+='<div class="line"><div style="flex:1"><div class="t">'+esc(u.item)+(u.who?' — '+esc(u.who):'')+'<small class="'+(u.overdue?'over':'')+'">'+(u.overdue?'просрочен · ':'')+(u.date===tk?'сегодня':ru(u.date))+(u.regular?' · ежемесячно':'')+'</small></div></div><div class="v">'+rub(u.sum)+'</div>'+
+       (u.row?'<div class="acts"><button class="iconbtn ok" title="Оплачено" onclick="payStatus('+u.row+',\'Оплачено\')">✓</button></div>':'')+
+       (u.loan?'<div class="acts"><button class="iconbtn" title="В раздел «Кредиты»" onclick="openPanel(\'loans\')">›</button></div>':'')+'</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Разовые платежи</h2><button class="btn small" onclick="editOneoff()">+ Добавить</button></div>';
+  if(!p.oneoff.length) h+='<p class="empty">Разовых платежей нет.</p>';
+  p.oneoff.forEach(o=>{
+    const paid=o.status==='Оплачено';
+    h+='<div class="line'+(paid?' paid':'')+'"><div style="flex:1;min-width:0" onclick="editOneoff('+o.row+')"><div class="t">'+esc(o.item)+(o.who?' — '+esc(o.who):'')+'<small class="'+(o.overdue?'over':'')+'">'+ru(o.date)+' · '+(paid?'оплачено':(o.overdue?'просрочен':'ждёт'))+'</small></div></div><div class="v">'+rub(o.sum)+'</div>'+
+       '<div class="acts"><button class="iconbtn '+(paid?'':'ok')+'" title="'+(paid?'Вернуть в «Ждёт»':'Оплачено')+'" onclick="payStatus('+o.row+',\''+(paid?'Ждёт':'Оплачено')+'\')">'+(paid?'↺':'✓')+'</button></div></div>';
+  });
+  h+='</div>';
+
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Регулярные</h2><button class="btn small" onclick="editRegular()">+ Добавить</button></div><p class="sub">Нажмите на платёж, чтобы изменить сумму или число.</p>';
+  p.regular.slice().sort((a,b)=>a.day-b.day).forEach(r=>{
+    h+='<div class="line" onclick="editRegular('+r.row+')" style="cursor:pointer"><div class="t">'+esc(r.item)+(r.who?' — '+esc(r.who):'')+'<small>каждое '+r.day+'-е число'+(r.comment?' · '+esc(r.comment):'')+'</small></div><div class="v">'+rub(r.sum)+'</div></div>';
+  });
+  if(p.loanMonthly) h+='<div class="line" onclick="openPanel(\'loans\')" style="cursor:pointer"><div class="t">Кредиты<small>условия, оплаты и просрочки — в разделе «Кредиты»</small></div><div class="v">'+rub(p.loanMonthly)+'</div></div>';
+  h+='</div>';
+  panel(h);
+}
+function payStatus(row,status){ if(!needName()) return; run('setOneoffStatus',{row,status,name:name()}).then(p=>{S.pay=p;renderPay();toast(status==='Оплачено'?'Отмечено как оплачено':'Платёж снова ждёт');}).catch(fail); }
+function itemOptions(sel){ return S.refs.categories.map(c=>'<option'+(c.name===sel?' selected':'')+'>'+esc(c.name)+'</option>').join(''); }
+function editOneoff(row){
+  const o=row?S.pay.oneoff.find(x=>x.row===row):{date:todayISO(),item:'',who:'',sum:'',status:'Ждёт'};
+  const m=modal('<h3>'+(row?'Разовый платёж':'Новый разовый платёж')+'</h3>'+
+    '<label>Сумма, ₽</label><input id="o-sum" class="amount" inputmode="decimal" value="'+esc(o.sum)+'" placeholder="0">'+
+    '<label>Статья</label><select id="o-item"><option value="">— выберите —</option>'+itemOptions(o.item)+'</select>'+
+    '<label>Кому</label><input id="o-who" value="'+esc(o.who)+'">'+
+    '<label>Дата оплаты</label><input type="date" id="o-date" value="'+esc(o.date)+'">'+
+    '<button class="btn" id="o-save">Сохранить</button>'+(row?'<button class="btn danger" id="o-del">Удалить</button>':'')+'<button class="btn ghost" id="o-x">Отмена</button>');
+  $('o-x').onclick=()=>m.remove();
+  $('o-save').onclick=()=>{ if(!needName()) return;
+    run('saveOneoff',{row,name:name(),date:$('o-date').value,item:$('o-item').value,who:$('o-who').value,sum:val('o-sum'),status:o.status})
+      .then(p=>{m.remove();S.pay=p;renderPay();toast('Сохранено');}).catch(fail); };
+  if(row) $('o-del').onclick=()=>{ if(!needName()) return; run('deleteOneoff',{row,name:name()}).then(p=>{m.remove();S.pay=p;renderPay();toast('Удалено');}).catch(fail); };
+}
+function editRegular(row){
+  const r=row?S.pay.regular.find(x=>x.row===row):{item:'',who:'',day:'',sum:'',comment:''};
+  const m=modal('<h3>'+(row?'Регулярный платёж':'Новый регулярный платёж')+'</h3>'+
+    '<label>Сумма, ₽</label><input id="g-sum" class="amount" inputmode="decimal" value="'+esc(r.sum)+'" placeholder="0">'+
+    '<label>Статья</label><select id="g-item"><option value="">— выберите —</option>'+itemOptions(r.item)+'</select>'+
+    '<div class="grid2"><div><label>Кому</label><input id="g-who" value="'+esc(r.who)+'"></div><div><label>Число месяца</label><input id="g-day" inputmode="numeric" value="'+esc(r.day)+'" placeholder="1–31"></div></div>'+
+    '<label>Комментарий</label><input id="g-c" value="'+esc(r.comment)+'">'+
+    '<button class="btn" id="g-save">Сохранить</button>'+(row?'<button class="btn danger" id="g-del">Удалить</button>':'')+'<button class="btn ghost" id="g-x">Отмена</button>');
+  $('g-x').onclick=()=>m.remove();
+  $('g-save').onclick=()=>{ if(!needName()) return; const day=val('g-day'); if(!(day>=1&&day<=31)) return toast('Число месяца от 1 до 31',true);
+    run('saveRegular',{row,name:name(),item:$('g-item').value,who:$('g-who').value,day,sum:val('g-sum'),comment:$('g-c').value})
+      .then(p=>{m.remove();S.pay=p;renderPay();toast('Сохранено');}).catch(fail); };
+  if(row) $('g-del').onclick=()=>confirmBox('Удалить регулярный платёж?','Он пропадёт из платёжного календаря.','Удалить',()=>{
+    run('deleteRegular',{row,name:name()}).then(p=>{m.remove();S.pay=p;renderPay();toast('Удалено');}).catch(fail); },true);
+}
+
+/* --- справочники --- */
+function refsPanel(){
+  const types=S.refs.types.length?S.refs.types:[{name:'Себестоимость'},{name:'Постоянные'},{name:'Разовые'},{name:'Финансовые'}];
+  let h='<div class="card"><h2>Точки</h2><div class="chips" style="margin-top:10px">'+S.refs.points.map(p=>'<span class="chip">'+esc(p)+'</span>').join('')+'</div>'+
+        '<label>Новая точка</label><input id="n-point" placeholder="Название"><button class="btn" onclick="addPoint()">Добавить точку</button></div>';
+  h+='<div class="card"><h2>Новая категория расходов</h2><label>Название</label><input id="n-cat" placeholder="Например: Упаковка">'+
+     '<label>Тип</label><div id="n-types">'+types.map(t=>'<label style="display:flex;gap:10px;align-items:flex-start;margin:10px 0;font-weight:400;color:var(--ink)"><input type="radio" name="ntype" value="'+esc(t.name)+'" style="width:auto;margin-top:3px;-webkit-appearance:radio;appearance:auto"><span><b>'+esc(t.name)+'</b><br><span class="muted">'+esc(t.hint||'')+'</span></span></label>').join('')+'</div>'+
+     '<button class="btn" onclick="addCat()">Добавить категорию</button></div>';
+  panel(h);
+}
+function applyRefs(r){ S.refs=r; renderRevPoints(); renderExpPoints(); renderCats(); refsPanel(); }
+function addPoint(){ if(!needName()) return; run('addPoint',{value:$('n-point').value,name:name()}).then(r=>{applyRefs(r);toast('Точка добавлена');}).catch(fail); }
+function addCat(){ if(!needName()) return; const t=document.querySelector('input[name=ntype]:checked');
+  if(!t) return toast('Выберите тип', true);
+  run('addCategory',{value:$('n-cat').value,type:t.value,name:name()}).then(r=>{applyRefs(r);toast('Категория добавлена');}).catch(fail); }
+
+/* ===== кредиты ===== */
+const MRU=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const monthRu = k => { if(!k) return ''; const [y,m]=k.split('-').map(Number); return MRU[m-1]+' '+y; };
+const plural = (n,a,b,c) => { n=Math.abs(n)%100; const d=n%10; return (n>10&&n<20)?c:(d>1&&d<5)?b:(d===1)?a:c; };
+const days = n => n+' '+plural(n,'день','дня','дней');
+const pays = n => n+' '+plural(n,'платёж','платежа','платежей');
+const rub2 = n => (n===null||n===undefined||isNaN(n)) ? '—' : Number(n).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₽';
+const fmtIn = n => (n===''||n===null||n===undefined) ? '' : String(Math.round(Number(n)*100)/100).replace('.',',');
+const dn = iso => { const [y,m,d]=iso.split('-').map(Number); return Math.round(Date.UTC(y,m-1,d)/864e5); };
+
+function loadLoanAlert(){ run('getLoanAlerts').then(a=>{ S.loanAlert=a; paintLoanAlert(); }).catch(()=>{}); }
+function setLoans(l){ S.loans=l; S.loanAlert={summary:l.summary,soon:l.soonAlert}; paintLoanAlert(); }
+function paintLoanAlert(){
+  const a=S.loanAlert, box=$('loanAlert'); if(!a||!box) return;
+  const s=a.summary; let h='';
+  if(s.count){
+    h+='<div class="alert bad" onclick="openLoans()"><div class="em">⚠️</div><div><b>Просрочено '+pays(s.count)+' по кредитам · '+rub(s.debt)+'</b>'+
+       (s.penalty>0.5?'пени и штрафы '+rub(s.penalty)+' · ':'')+'самая долгая — '+days(s.maxDays)+'</div><span class="go">›</span></div>';
+  } else if(s.penalty>0.5){
+    h+='<div class="alert bad" onclick="openLoans()"><div class="em">⚠️</div><div><b>Не оплачены пени по кредитам · '+rub(s.penalty)+'</b>платежи внесены с опозданием</div><span class="go">›</span></div>';
+  }
+  if(a.soon && a.soon.length){
+    const x=a.soon[0], t=a.soon.reduce((z,y)=>z+y.rest,0);
+    h+='<div class="alert soon" onclick="openLoans()"><div class="em">⏰</div><div><b>'+(x.inDays===0?'Сегодня':(x.inDays===1?'Завтра':'Через '+days(x.inDays)))+' платёж по кредиту · '+rub(a.soon.length>1?t:x.rest)+'</b>'+
+       esc(x.loan)+(a.soon.length>1?' и ещё '+(a.soon.length-1)+' в ближайшие 2 дня':'')+'</div><span class="go">›</span></div>';
+  }
+  box.innerHTML=h;
+  $('moreBadge').classList.toggle('hidden', !(s.count||s.penalty>0.5));
+  const sub=$('loanSub');
+  if(sub) sub.innerHTML = s.count ? '<span class="over">Просрочено '+rub(s.debt)+(s.penalty>0.5?' + пени '+rub(s.penalty):'')+'</span>'
+    : (a.soon&&a.soon.length ? 'Скоро платёж: '+rub(a.soon[0].rest)+' · '+ru(a.soon[0].due) : 'Просрочек нет · пени, калькулятор');
+}
+function openLoans(){ go('more'); openPanel('loans'); }
+function loadLoans(){ panel('<div class="loading">Загружаю…</div>'); run('getLoans').then(l=>{ setLoans(l); renderLoans(); }).catch(fail); }
+
+function renderLoans(){
+  const L=S.loans, s=L.summary; let h='';
+  if(s.count||s.penalty>0.5){
+    h+='<div class="hero red"><div class="lbl">Долг по просрочке на '+ru(L.today)+'</div><div class="big">'+rub(s.debt+s.penalty)+'</div>'+
+       '<div class="row"><div><b>'+rub(s.debt)+'</b>'+pays(s.count)+'</div><div><b>'+rub(s.penalty)+'</b>пени и штрафы</div>'+(s.count?'<div><b>'+days(s.maxDays)+'</b>самая долгая</div>':'')+'</div></div>';
+  } else {
+    h+='<div class="hero"><div class="lbl">Кредиты</div><div class="big">Просрочек нет</div><div class="row">'+
+       '<div><b>'+rub(s.monthly)+'</b>платежей в месяц</div><div><b>'+L.loans.filter(x=>x.active).length+'</b>действующих</div>'+
+       (s.next?'<div><b>'+ru(s.next.due)+'</b>следующий платёж</div>':'')+'</div></div>';
+  }
+
+  const due=L.items.filter(x=>x.status!=='paid' && x.daysTo<=14);
+  h+='<div class="card"><h2>К оплате</h2><p class="sub">Просроченные и платежи на 14 дней вперёд. ✓ — отметить оплату, 🧮 — посчитать пени.</p>';
+  if(!due.length) h+='<p class="empty">В ближайшие две недели платежей нет.</p>';
+  due.forEach(x=>{
+    const over=x.status==='overdue';
+    const note= over ? '<span class="over">просрочка '+days(x.days)+(x.penaltyDebt>0.5?' · пени '+rub(x.penaltyDebt):'')+'</span>'
+      : (x.daysTo===0?'<span class="over">сегодня</span>':(x.daysTo===1?'завтра':'через '+days(x.daysTo)));
+    h+='<div class="line"><div style="flex:1;min-width:0"><div class="t">'+esc(x.loan)+'<small>'+ru(x.due)+' · '+note+(x.paid>0?' · внесено '+rub(x.paid):'')+'</small></div></div>'+
+       '<div class="v'+(over?' over':'')+'">'+rub(x.rest)+'</div><div class="acts">'+
+       (over?'<button class="iconbtn" title="Калькулятор" onclick="calcFrom(\''+esc(x.key)+'\')">🧮</button>':'')+
+       '<button class="iconbtn ok" title="Оплачено" onclick="payLoanBox(\''+esc(x.key)+'\')">✓</button></div></div>';
+  });
+  h+='</div>';
+
+  const late=L.items.filter(x=>x.status==='paid' && x.penaltyDebt>0.5);
+  if(late.length){
+    h+='<div class="card"><h2>Пени за оплаченные с опозданием</h2><p class="sub">Платёж внесён, а пени ещё нет. Оплатили или банк списал сам — нажмите ✓.</p>';
+    late.forEach(x=>{ h+='<div class="line"><div style="flex:1;min-width:0"><div class="t">'+esc(x.loan)+'<small>за '+esc(monthRu(x.month))+' · оплачен '+ru(x.payDate)+', опоздание '+days(x.days)+'</small></div></div>'+
+      '<div class="v over">'+rub(x.penaltyDebt)+'</div><div class="acts"><button class="iconbtn ok" title="Пени оплачены" onclick="payLoanBox(\''+esc(x.key)+'\',true)">✓</button></div></div>'; });
+    h+='</div>';
+  }
+
+  if(s.count||s.penalty>0.5) h+=structureHtml(L);
+  h+=calcHtml();
+
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Кредиты</h2><button class="btn small" onclick="editLoan()">+ Добавить</button></div><p class="sub">Нажмите на кредит, чтобы поправить условия из договора.</p>';
+  if(!L.loans.length) h+='<p class="empty">Кредитов пока нет.</p>';
+  L.loans.slice().sort((a,b)=>(b.active-a.active)||a.day-b.day).forEach(l=>{
+    const info=[l.owner,l.bank,'каждое '+l.day+'-е','пени '+fmtIn(l.rate)+'% в день'+(l.fine?' + штраф '+rub(l.fine):''),
+      (l.balance!==''&&l.balance!==null?'остаток '+rub(l.balance):''),(l.active?'':'закрыт')].filter(Boolean);
+    h+='<div class="line'+(l.active?'':' paid')+'" style="cursor:pointer" onclick="editLoan(\''+esc(l.id)+'\')"><div class="t">'+esc(l.name)+'<small>'+info.map(esc).join(' · ')+'</small></div><div class="v">'+rub(l.sum)+'</div></div>';
+  });
+  h+='</div>';
+
+  h+='<div class="card"><h2>Последние оплаты</h2>';
+  if(!L.pays.length) h+='<p class="empty">Оплат пока нет. Отметьте платёж кнопкой ✓ выше.</p>';
+  L.pays.forEach(p=>{
+    h+='<div class="line"><div style="flex:1;min-width:0"><div class="t">'+esc(p.loan)+'<small>'+ru(p.date)+' · за '+esc(monthRu(p.month))+(p.penalty?' · пени '+rub(p.penalty):'')+(p.who?' · '+esc(p.who):'')+(p.expRow?' · в расходах':'')+'</small></div></div>'+
+       '<div class="v">'+rub(p.sum+p.penalty)+'</div><div class="acts"><button class="iconbtn" title="Удалить оплату" onclick="delLoanPay('+p.row+')">✕</button></div></div>';
+  });
+  h+='</div>';
+  panel(h); bindCalc();
+}
+
+function structureHtml(L){
+  const s=L.summary, tot=Math.max(1,s.debt+s.penalty);
+  let h='<div class="card"><h2>Структура просрочки</h2><p class="sub">Из чего состоит долг и где он копится.</p>'+
+    '<div class="stack"><i style="width:'+(s.debt/tot*100).toFixed(1)+'%;background:var(--accent)"></i><i style="width:'+(s.penalty/tot*100).toFixed(1)+'%;background:var(--amber)"></i></div>'+
+    '<div class="legend"><span style="--c:var(--accent)">Просроченные платежи '+rub(s.debt)+'</span><span style="--c:var(--amber)">Пени и штрафы '+rub(s.penalty)+'</span></div>';
+  const bars=(title,list)=>{
+    if(!list.length) return '';
+    const mx=Math.max(1,...list.map(x=>x.sum+x.penalty));
+    return '<div class="grp" style="margin-top:20px">'+title+'</div>'+list.map(x=>
+      '<div class="line"><div style="flex:1;min-width:0"><div class="t">'+esc(x.label)+'<small>'+(x.count?pays(x.count):'пени')+(x.count&&x.penalty>0.5?' · пени '+rub(x.penalty):'')+'</small></div>'+
+      '<div class="stack" style="height:8px;margin:7px 0 0"><i style="width:'+(x.sum/mx*100).toFixed(1)+'%;background:var(--accent)"></i><i style="width:'+(x.penalty/mx*100).toFixed(1)+'%;background:var(--amber)"></i></div></div>'+
+      '<div class="v">'+rub(x.sum+x.penalty)+'</div></div>').join('');
+  };
+  h+=bars('По сроку просрочки', L.buckets.filter(b=>b.count));
+  h+=bars('По кредитам', L.byLoan);
+  if(L.byOwner.length>1) h+=bars('По владельцам', L.byOwner);
+  return h+'</div>';
+}
+
+function calcHtml(){
+  return '<div class="card" id="calcCard"><h2>Калькулятор просрочки</h2><p class="sub">Сколько набежит пеней и сколько всего платить. Ставку и штраф возьмите из договора.</p>'+
+    '<label>Сумма просрочки, ₽</label><input id="k-sum" class="amount" inputmode="decimal" placeholder="0">'+
+    '<div class="grid2"><div><label>Дата по графику</label><input type="date" id="k-due"></div><div><label>Дата оплаты</label><input type="date" id="k-pay"></div></div>'+
+    '<label>Как считаются пени</label><div class="seg" id="k-mode"><button type="button" data-m="day">% в день</button><button type="button" data-m="year">% годовых</button></div>'+
+    '<div class="grid2"><div><label id="k-rate-l">Ставка</label><input id="k-rate" inputmode="decimal"></div><div><label>Штраф разово, ₽</label><input id="k-fine" inputmode="decimal" placeholder="0"></div></div>'+
+    '<div class="res" id="k-res"></div></div>';
+}
+function setMode(m){
+  S.kMode=m; $('k-mode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('k-rate-l').textContent='Ставка, '+(m==='day'?'% в день':'% годовых');
+}
+function bindCalc(){
+  const k=S.kCalc||{sum:'',due:todayISO(),pay:todayISO(),mode:'day',rate:'0,1',fine:''};
+  $('k-sum').value=k.sum; $('k-due').value=k.due; $('k-pay').value=k.pay; $('k-rate').value=k.rate; $('k-fine').value=k.fine;
+  setMode(k.mode);
+  $('k-mode').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const r=Number(val('k-rate'))||0;
+    if(b.dataset.m==='year' && S.kMode!=='year' && r<1) $('k-rate').value='20';
+    if(b.dataset.m==='day' && S.kMode!=='day' && r>=1) $('k-rate').value='0,1';
+    setMode(b.dataset.m); calcRun();
+  });
+  ['k-sum','k-due','k-pay','k-rate','k-fine'].forEach(id=>$(id).addEventListener('input',calcRun));
+  calcRun();
+}
+function calcRun(){
+  S.kCalc={sum:$('k-sum').value,due:$('k-due').value,pay:$('k-pay').value,mode:S.kMode,rate:$('k-rate').value,fine:$('k-fine').value};
+  const sum=Number(val('k-sum'))||0, rate=Number(val('k-rate'))||0, fine=Number(val('k-fine'))||0, due=$('k-due').value, pay=$('k-pay').value, box=$('k-res');
+  if(!sum||!due||!pay){ box.innerHTML='<p class="empty" style="padding:0">Введите сумму и даты — расчёт появится здесь.</p>'; return; }
+  const d=Math.max(0,dn(pay)-dn(due));
+  const daily= S.kMode==='year' ? sum*rate/100/365 : sum*rate/100;
+  const pen=daily*d, f=d>0?fine:0;
+  let h='<div class="muted">Итого к оплате '+ru(pay)+'</div><div class="tot">'+rub(sum+pen+f)+'</div>'+
+    '<div class="kv"><span>Дней просрочки</span><b>'+(d?days(d):'нет просрочки')+'</b></div>'+
+    '<div class="kv"><span>Основной платёж</span><b>'+rub(sum)+'</b></div>'+
+    '<div class="kv"><span>Пени</span><b>'+rub2(pen)+'</b></div>'+
+    (fine?'<div class="kv"><span>Штраф</span><b>'+(d?rub(f):'не начислен')+'</b></div>':'')+
+    '<div class="kv"><span>Каждый день просрочки</span><b>+'+rub2(daily)+'</b></div>';
+  if(S.kMode==='year') h+='<div class="kv"><span>Это в день</span><b>'+fmtIn(rate/365)+'%</b></div>';
+  h+='<div class="grp" style="margin-top:12px">Если оплатить позже</div>';
+  [7,14,30,60].forEach(k=>{ const dd=d+k; h+='<div class="kv"><span>через '+days(k)+' · просрочка '+days(dd)+'</span><b>'+rub(sum+daily*dd+fine)+'</b></div>'; });
+  box.innerHTML=h;
+}
+function calcFrom(key){
+  const x=S.loans.items.find(i=>i.key===key); if(!x) return;
+  S.kCalc={sum:fmtIn(x.rest),due:x.due,pay:todayISO(),mode:'day',rate:fmtIn(x.rate),fine:x.loanFine?fmtIn(x.loanFine):''};
+  bindCalc(); $('calcCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function payLoanBox(key, penOnly){
+  const x=S.loans.items.find(i=>i.key===key); if(!x) return;
+  const pen=x.penaltyDebt>0.5?x.penaltyDebt:0;
+  const m=modal('<h3>'+esc(x.loan)+'</h3><p class="muted">За '+esc(monthRu(x.month))+' · по графику '+ru(x.due)+(x.days&&!penOnly?' · <span class="over">просрочка '+days(x.days)+'</span>':'')+'</p>'+
+    '<label>Платёж, ₽</label><input id="p-sum" class="amount" inputmode="decimal" value="'+(penOnly?'':fmtIn(x.rest))+'" placeholder="0">'+
+    '<label>Пени и штраф, ₽</label><input id="p-pen" inputmode="decimal" value="'+(pen?fmtIn(pen):'')+'" placeholder="0">'+
+    '<p class="muted" style="margin:6px 0 0">'+(pen?'Посчитано на сегодня по ставке из условий кредита. Если банк взял другую сумму — исправьте.':'Если банк взял пени — впишите их сюда.')+'</p>'+
+    '<label>Дата оплаты</label><input type="date" id="p-date" value="'+todayISO()+'">'+
+    '<label>Комментарий</label><input id="p-c" placeholder="необязательно">'+
+    '<label class="chk"><input type="checkbox" id="p-exp" checked> Записать в расходы (категория «Кредит»)</label>'+
+    '<button class="btn" id="p-save">Отметить оплату</button><button class="btn ghost" id="p-x">Отмена</button>');
+  $('p-x').onclick=()=>m.remove();
+  $('p-save').onclick=()=>{
+    if(!needName()) return;
+    const amount=val('p-sum')||0, penalty=val('p-pen')||0;
+    if(!amount && !penalty) return toast('Введите сумму',true);
+    busy($('p-save'),true);
+    run('payLoan',{id:x.loanId,month:x.month,date:$('p-date').value,amount,penalty,comment:$('p-c').value.trim(),toExpense:$('p-exp').checked,name:name()})
+      .then(l=>{ m.remove(); setLoans(l); renderLoans(); toast('Оплата отмечена'); })
+      .catch(e=>{ busy($('p-save'),false); fail(e); });
+  };
+}
+function delLoanPay(row){
+  if(!needName()) return;
+  confirmBox('Удалить оплату?','Платёж снова станет неоплаченным. Если оплата попала в расходы, этот расход тоже удалится.','Удалить',()=>{
+    run('deleteLoanPay',{row,name:name()}).then(l=>{ setLoans(l); renderLoans(); toast('Оплата удалена'); }).catch(fail);
+  },true);
+}
+function editLoan(id){
+  const l=id?S.loans.loans.find(x=>x.id===id):{name:'',owner:'',bank:'',sum:'',day:'',rate:0.1,fine:0,start:todayISO().slice(0,8)+'01',balance:'',active:true,comment:''};
+  const m=modal('<h3>'+(id?'Кредит':'Новый кредит')+'</h3>'+
+    '<label>Название</label><input id="l-name" value="'+esc(l.name)+'" placeholder="Например: Сбер, кофемашина">'+
+    '<div class="grid2"><div><label>Чей</label><input id="l-owner" value="'+esc(l.owner)+'" placeholder="Леша / Коля"></div><div><label>Банк</label><input id="l-bank" value="'+esc(l.bank)+'"></div></div>'+
+    '<label>Платёж в месяц, ₽</label><input id="l-sum" class="amount" inputmode="decimal" value="'+fmtIn(l.sum)+'" placeholder="0">'+
+    '<div class="grid2"><div><label>Число месяца</label><input id="l-day" inputmode="numeric" value="'+esc(l.day)+'" placeholder="1–31"></div><div><label>Учитывать с</label><input type="date" id="l-start" value="'+esc(l.start)+'"></div></div>'+
+    '<div class="grid2"><div><label>Пени, % в день</label><input id="l-rate" inputmode="decimal" value="'+fmtIn(l.rate)+'"></div><div><label>Штраф разово, ₽</label><input id="l-fine" inputmode="decimal" value="'+(l.fine?fmtIn(l.fine):'')+'" placeholder="0"></div></div>'+
+    '<p class="muted" style="margin:8px 0 0">Если в договоре «20% годовых» — это 0,055% в день. «Учитывать с» — с какой даты приложение проверяет оплаты: если просрочка уже есть, поставьте дату первого неоплаченного платежа.</p>'+
+    '<label>Остаток долга, ₽</label><input id="l-bal" inputmode="decimal" value="'+fmtIn(l.balance)+'" placeholder="необязательно">'+
+    '<label>Комментарий</label><input id="l-c" value="'+esc(l.comment)+'">'+
+    (id?'<label class="chk"><input type="checkbox" id="l-act"'+(l.active?' checked':'')+'> Кредит действует (снимите галочку, когда погасите)</label>':'')+
+    '<button class="btn" id="l-save">Сохранить</button><button class="btn ghost" id="l-x">Отмена</button>');
+  $('l-x').onclick=()=>m.remove();
+  $('l-save').onclick=()=>{
+    if(!needName()) return;
+    const day=val('l-day'); if(!(day>=1&&day<=31)) return toast('Число месяца от 1 до 31',true);
+    if(!val('l-sum')) return toast('Введите платёж в месяц',true);
+    busy($('l-save'),true);
+    run('saveLoan',{row:l.row,title:$('l-name').value,owner:$('l-owner').value,bank:$('l-bank').value,sum:val('l-sum'),day,rate:val('l-rate'),fine:val('l-fine'),
+      start:$('l-start').value,balance:val('l-bal'),comment:$('l-c').value,active:id?$('l-act').checked:true,name:name()})
+      .then(r=>{ m.remove(); setLoans(r); renderLoans(); toast('Сохранено'); }).catch(e=>{ busy($('l-save'),false); fail(e); });
+  };
+}
+
+/* ===== вход и установка ===== */
+const SHARE_IC='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>';
+function installSteps(){
+  if(IOS) return '<li><span>Откройте эту страницу в Safari и нажмите «Поделиться» '+SHARE_IC+' (в новых iOS — сначала «•••»)</span></li>'+
+    '<li><span>Выберите «На экран «Домой»» и нажмите «Добавить»</span></li>'+
+    '<li><span>Запустите «Результаты» с экрана «Домой» и введите код уже там</span></li>';
+  return '<li><span>Android, Chrome: меню ⋮ → «Установить приложение» или «Добавить на главный экран»</span></li>'+
+    '<li><span>Mac, Safari: меню «Файл» → «Добавить в Dock»</span></li>'+
+    '<li><span>Запустите «Результаты» с иконки и введите код уже там</span></li>';
+}
+function installNote(){
+  return '<div class="note"><b>Установите как приложение</b>Так оно откроется во весь экран, без адресной строки.'+
+    '<ol class="steps" style="margin-top:8px">'+installSteps()+'</ol>'+
+    '<button class="btn small'+(S.installEvt?'':' hidden')+'" id="g-install" onclick="installNow()" style="margin-top:6px">Установить</button></div>';
+}
+function installNow(){ const e=S.installEvt; if(!e) return; S.installEvt=null; e.prompt(); }
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); S.installEvt=e; const b=$('g-install'); if(b) b.classList.remove('hidden'); });
+
+const LOGO_IC='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>';
+function showGate(msg){
+  const g=$('gate');
+  if(!g.classList.contains('hidden')){ if(msg) $('g-err').textContent=msg; return; }
+  g.innerHTML='<div class="in"><div class="logo">'+LOGO_IC+'</div><h1>Результаты</h1><p class="lead">Выручка и расходы кофеен</p>'+
+    (!GAS && !STANDALONE ? installNote() : '')+
+    '<div class="card"><label for="g-code" style="margin-top:0">Код доступа</label>'+
+    '<input id="g-code" class="code" inputmode="numeric" autocomplete="off" autocapitalize="off" maxlength="12" placeholder="••••••">'+
+    '<label for="g-name">Ваше имя</label><input id="g-name" autocomplete="given-name" placeholder="Например: Анна" value="'+esc(name())+'">'+
+    '<p class="muted" style="margin:8px 0 0">Код выдаёт руководитель. Имя будет видно в журнале.</p>'+
+    '<div class="err" id="g-err">'+esc(msg||'')+'</div>'+
+    '<button class="btn" id="g-go" style="margin-top:6px">Войти</button></div></div>';
+  g.classList.remove('hidden');
+  $('g-go').onclick=gateGo;
+  ['g-code','g-name'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') gateGo(); }));
+}
+function gateGo(){
+  const btn=$('g-go'), code=$('g-code').value.replace(/\s/g,''), n=$('g-name').value.trim();
+  if(!code) return $('g-err').textContent='Введите код доступа';
+  if(!n) return $('g-err').textContent='Введите имя';
+  $('g-err').textContent=''; busy(btn,true); btn.textContent='Проверяю…';
+  ls.set('code',code);
+  call('getRefs').then(r=>{
+    ls.set('name',n); paintName();
+    $('gate').classList.add('hidden'); $('gate').innerHTML='';
+    start(r);
+  }).catch(e=>{
+    if(isAuthErr(e)) ls.set('code','');
+    $('g-err').textContent=isAuthErr(e)?'Код не подошёл. Проверьте и попробуйте ещё раз.':(e.message||'Ошибка');
+    busy(btn,false); btn.textContent='Войти';
+  });
+}
+function installPanel(){ panel('<div class="card"><h2>Установить на телефон</h2><p class="sub">Приложение откроется с иконки во весь экран.</p><ol class="steps">'+installSteps()+'</ol>'+
+  (S.installEvt?'<button class="btn" onclick="installNow()">Установить</button>':'')+'</div>'); }
+
+/* ===== старт ===== */
+function paintDate(){ $('hdrDate').textContent=new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'}); }
+function start(r){
+  S.refs=r; S.rPoint=salesPoints()[0]||null;
+  renderRevPoints(); renderExpPoints(); renderCats(); refreshToday(); loadLoanAlert();
+}
+(function init(){
+  paintDate(); S.day=todayISO();
+  $('r-date').value=S.day; $('e-date').value=S.day;
+  $('r-date').addEventListener('change',renderRevPoints);
+  paintName(); fillWho();
+  if(GAS) $('newApp').innerHTML='<div class="note"><b>Новая версия приложения</b>Во весь экран и без плашки Google. Откройте её в Safari и установите на экран «Домой».'+
+    '<div><a class="btn small" style="display:inline-block;text-decoration:none;margin-top:10px" href="'+APP_URL+'" target="_blank" rel="noopener">Открыть новую версию</a></div></div>';
+  if(!GAS && !STANDALONE){
+    const box=document.querySelector('#more-menu .menu');
+    box.insertAdjacentHTML('beforeend','<div class="line" onclick="installPanel()"><div class="ic" style="background:#e6f0ff;color:#2f6fdc">⤓</div><div class="t">Установить на телефон<small>Иконка на экране, во весь экран</small></div><span class="chev">›</span></div>');
+  }
+  if(!GAS && 'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if(!ls.get('code')) return showGate();
+  run('getRefs').then(start).catch(e=>{ if(!isAuthErr(e)) toast('Не удалось загрузить справочники: '+e.message,true); });
+})();
+
+/* Приложение с экрана «Домой» может висеть в памяти сутками: при возврате обновляем дату и данные. */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ S.hiddenAt=Date.now(); return; }
+  if(!S.refs) return;
+  const t=todayISO();
+  if(t!==S.day){
+    paintDate();
+    if(!S.edit.rev && $('r-date').value===S.day) $('r-date').value=t;
+    if(!S.edit.exp && $('e-date').value===S.day) $('e-date').value=t;
+    S.day=t; S.filledToday=[]; renderRevPoints();
+  }
+  if(Date.now()-(S.hiddenAt||0)>60000){ refreshToday(); loadLoanAlert(); }
+});
+</script>
+</body>
+</html>
